@@ -17,7 +17,7 @@ model User {
     id       String    @id @default(uuid())
     email    String    @unique
     password String
-    is_admin Boolean
+    is_admin Boolean   @default(false)
     comments Comment[]
 }
 

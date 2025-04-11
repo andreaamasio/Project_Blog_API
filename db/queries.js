@@ -35,7 +35,24 @@ async function findUserById(id) {
     throw error
   }
 }
+async function postNewUser(email, hashedPassword) {
+  try {
+    const newUser = await prisma.user.create({
+      data: {
+        email,
+        password: hashedPassword,
+      },
+    })
+
+    console.log(`User successfully created: ${email}`)
+    return newUser
+  } catch (error) {
+    console.error(`Error creating new user (${email}):`, error)
+    throw error
+  }
+}
 module.exports = {
   findUserByEmail,
   findUserById,
+  postNewUser,
 }
