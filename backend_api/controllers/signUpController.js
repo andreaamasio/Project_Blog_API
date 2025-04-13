@@ -51,7 +51,7 @@ const postSignUp = [
     const hashedPassword = await bcrypt.hash(req.body.password, 10)
     console.log(`email:${email}`)
     console.log(`hashedPassword:${hashedPassword}`)
-    //TODO implement logic to add user to db
+
     await db.postNewUser(email, hashedPassword)
 
     res.json({

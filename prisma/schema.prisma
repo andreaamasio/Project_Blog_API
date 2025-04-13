@@ -27,7 +27,7 @@ model Post {
     text         String
     comments     Comment[]
     createdTime  DateTime  @default(now())
-    is_published Boolean
+    is_published Boolean   @default(false)
 }
 
 model Comment {

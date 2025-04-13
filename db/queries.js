@@ -53,8 +53,25 @@ async function postNewUser(email, hashedPassword) {
     throw error
   }
 }
+async function postNewPost(title, text) {
+  try {
+    const newPost = await prisma.post.create({
+      data: {
+        title,
+        text,
+      },
+    })
+
+    console.log(`Post successfully created: ${title}`)
+    return newPost
+  } catch (error) {
+    console.error(`Error creating new post (${title}):`, error)
+    throw error
+  }
+}
 module.exports = {
   findUserByEmail,
   findUserById,
   postNewUser,
+  postNewPost,
 }
