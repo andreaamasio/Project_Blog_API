@@ -59,5 +59,27 @@ const postSignUp = [
     })
   },
 ]
+const getLogin = (req, res) => {
+  res.json({ message: "this is the login route" })
+}
+const postLogin = async (req, res) => {
+  const user = await db.findUserByEmail(req.body.email)
+  try {
+    if (await bcrypt.compare(req.body.password, user.password)) {
+      res.json({
+        message: `Hi ${user.email}, you successfully logged in.`,
+      })
+    } else {
+      res.json({
+        message: "this is the post login route, the password did not match",
+      })
+    }
+  } catch {
+    res.json({
+      message:
+        "this is the post login route, comparison of password was not successful",
+    })
+  }
+}
 
-module.exports = { getSignUp, postSignUp }
+module.exports = { getSignUp, postSignUp, getLogin, postLogin }
