@@ -42,7 +42,7 @@ const postSignUp = [
     const errors = validationResult(req)
     if (!errors.isEmpty()) {
       console.log("errors found")
-      return res.status(400).render("sign-up", {
+      return res.status(400).json({
         errors: errors.array(),
       })
     }
@@ -51,9 +51,12 @@ const postSignUp = [
     const hashedPassword = await bcrypt.hash(req.body.password, 10)
     console.log(`email:${email}`)
     console.log(`hashedPassword:${hashedPassword}`)
+    //TODO implement logic to add user to db
     await db.postNewUser(email, hashedPassword)
 
-    res.redirect("/")
+    res.json({
+      message: `The user with email ${email} and password ${req.body.password}, hashed: ${hashedPassword} will be registered with prisma`,
+    })
   },
 ]
 
