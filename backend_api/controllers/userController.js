@@ -1,6 +1,7 @@
 const { body, validationResult } = require("express-validator")
 const bcrypt = require("bcryptjs")
 const db = require("../../db/queries")
+const jwt = require("jsonwebtoken")
 
 const emptyErr = "cannot be empty."
 const validateUser = [
@@ -66,8 +67,10 @@ const postLogin = async (req, res) => {
   const user = await db.findUserByEmail(req.body.email)
   try {
     if (await bcrypt.compare(req.body.password, user.password)) {
+      const accessToken = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET)
       res.json({
         message: `Hi ${user.email}, you successfully logged in.`,
+        accessToken,
       })
     } else {
       res.json({
