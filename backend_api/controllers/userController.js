@@ -67,7 +67,9 @@ const postLogin = async (req, res) => {
   const user = await db.findUserByEmail(req.body.email)
   try {
     if (await bcrypt.compare(req.body.password, user.password)) {
-      const accessToken = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET)
+      const accessToken = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, {
+        expiresIn: "1h",
+      })
       res.json({
         message: `Hi ${user.email}, you successfully logged in.`,
         accessToken,
@@ -84,5 +86,23 @@ const postLogin = async (req, res) => {
     })
   }
 }
+function authenticateToken(req, res, next) {
+  const authHeader = req.headers["authorization"]
+  const token = authHeader && authHeader.split(" ")[1]
+  if (token == null) return res.sendStatus(401)
+  jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
+    if (err) {
+      return res.sendStatus(403)
+    }
+    req.user = user
+    next()
+  })
+}
 
-module.exports = { getSignUp, postSignUp, getLogin, postLogin }
+module.exports = {
+  getSignUp,
+  postSignUp,
+  getLogin,
+  postLogin,
+  authenticateToken,
+}
