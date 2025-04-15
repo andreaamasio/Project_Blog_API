@@ -12,6 +12,16 @@ commentRouter.post(
   userController.authenticateToken,
   commentController.postFormComment
 )
+commentRouter.put(
+  "/:commentId",
+  userController.authenticateToken,
+  commentController.putFormComment
+)
+commentRouter.delete(
+  "/:commentId",
+  userController.authenticateToken,
+  commentController.deleteComment
+)
 
 // blogRouter.post("/login", blogController.loginUser)
 // blogRouter.get("/logout", blogController.logoutUser)

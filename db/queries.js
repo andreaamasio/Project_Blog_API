@@ -69,9 +69,20 @@ async function postNewPost(title, text) {
     throw error
   }
 }
+async function getAllComments(userId) {
+  try {
+    const comments = await prisma.comment.findMany()
+
+    console.log(`Comment of userId: ${userId}: ${comments}`)
+    return comments
+  } catch (error) {
+    console.error(`Error fetching comments`, error)
+    throw error
+  }
+}
 async function postNewComment(text, createdById, postId) {
   try {
-    const newPost = await prisma.comment.create({
+    const newComment = await prisma.comment.create({
       data: {
         text,
         createdById,
@@ -80,9 +91,42 @@ async function postNewComment(text, createdById, postId) {
     })
 
     console.log(`Comment successfully created: ${text}`)
-    return newPost
+    return newComment
   } catch (error) {
     console.error(`Error creating new comment (${text}):`, error)
+    throw error
+  }
+}
+async function putComment(postId, newText) {
+  try {
+    const updatedComment = await prisma.comment.update({
+      where: {
+        id: postId,
+      },
+      data: {
+        text: newText,
+      },
+    })
+
+    console.log(`Comment successfully updated with new text: ${newText}`)
+    return updatedComment
+  } catch (error) {
+    console.error(`Error creating updating comment (${newText}):`, error)
+    throw error
+  }
+}
+async function deleteComment(postId) {
+  try {
+    const deletedComment = await prisma.comment.delete({
+      where: {
+        id: postId,
+      },
+    })
+
+    console.log(`Comment postId: ${postId}`)
+    return deletedComment
+  } catch (error) {
+    console.error(`Error creating updating comment (${text}):`, error)
     throw error
   }
 }
@@ -92,4 +136,7 @@ module.exports = {
   postNewUser,
   postNewPost,
   postNewComment,
+  putComment,
+  deleteComment,
+  getAllComments,
 }
