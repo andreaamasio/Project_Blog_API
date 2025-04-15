@@ -60,8 +60,38 @@ const postSignUp = [
     })
   },
 ]
+const getLoginAdmin = (req, res) => {
+  res.json({ message: "this is the login route for the admin" })
+}
+const postLoginAdmin = async (req, res) => {
+  const user = await db.findUserByEmail(req.body.email)
+  if (!user)
+    res.json({
+      message: "the user does not exist in database, sign up first",
+    })
+  if (!user.is_admin) res.status(403).send("Forbidden, not an admin")
+  try {
+    if (await bcrypt.compare(req.body.password, user.password)) {
+      const accessToken = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, {
+        expiresIn: "1h",
+      })
+      res.json({
+        message: `Hi ${user.email}, you successfully logged in.`,
+        accessToken,
+      })
+    } else {
+      res.json({
+        message: "the password did not match",
+      })
+    }
+  } catch {
+    res.json({
+      message: "comparison of password was not successful",
+    })
+  }
+}
 const getLogin = (req, res) => {
-  res.json({ message: "this is the login route" })
+  res.json({ message: "this is the login route for the admin" })
 }
 const postLogin = async (req, res) => {
   const user = await db.findUserByEmail(req.body.email)
@@ -76,13 +106,12 @@ const postLogin = async (req, res) => {
       })
     } else {
       res.json({
-        message: "this is the post login route, the password did not match",
+        message: "the password did not match",
       })
     }
   } catch {
     res.json({
-      message:
-        "this is the post login route, comparison of password was not successful",
+      message: "comparison of password was not successful",
     })
   }
 }
@@ -98,11 +127,19 @@ function authenticateToken(req, res, next) {
     next()
   })
 }
-
+function authorizeAdmin(req, res, next) {
+  if (!req.user?.is_admin) {
+    return res.status(403).json({ message: "Access denied. Admins only." })
+  }
+  next()
+}
 module.exports = {
   getSignUp,
   postSignUp,
   getLogin,
   postLogin,
+  getLoginAdmin,
+  postLoginAdmin,
   authenticateToken,
+  authorizeAdmin,
 }

@@ -1,20 +1,19 @@
 const { Router } = require("express")
 const express = require("express")
-const blogController = require("../controllers/blogController")
+const commentController = require("../controllers/commentController")
 const userController = require("../controllers/userController")
-const blogRouter = Router()
-blogRouter.use(express.urlencoded({ extended: true }))
+const commentRouter = Router()
+commentRouter.use(express.urlencoded({ extended: true }))
 
-blogRouter.get("/", blogController.getPosts)
+commentRouter.get("/", commentController.getComments)
 //blogRouter.get("/post/:postId", blogController.getPost)
-blogRouter.post(
-  "/post",
+commentRouter.post(
+  "/:postId",
   userController.authenticateToken,
-  userController.authorizeAdmin,
-  blogController.postFormPost
+  commentController.postFormComment
 )
 
 // blogRouter.post("/login", blogController.loginUser)
 // blogRouter.get("/logout", blogController.logoutUser)
 
-module.exports = blogRouter
+module.exports = commentRouter

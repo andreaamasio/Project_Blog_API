@@ -8,5 +8,7 @@ userRouter.get("/sign-up", userController.getSignUp)
 userRouter.post("/sign-up", userController.postSignUp)
 userRouter.get("/login", userController.getLogin)
 userRouter.post("/login", userController.postLogin)
+userRouter.get("/login/admin", userController.getLoginAdmin)
+userRouter.post("/login/admin", userController.postLoginAdmin)
 
 module.exports = userRouter
