@@ -69,9 +69,27 @@ async function postNewPost(title, text) {
     throw error
   }
 }
+async function postNewComment(text, createdById, postId) {
+  try {
+    const newPost = await prisma.comment.create({
+      data: {
+        text,
+        createdById,
+        postId,
+      },
+    })
+
+    console.log(`Comment successfully created: ${text}`)
+    return newPost
+  } catch (error) {
+    console.error(`Error creating new comment (${text}):`, error)
+    throw error
+  }
+}
 module.exports = {
   findUserByEmail,
   findUserById,
   postNewUser,
   postNewPost,
+  postNewComment,
 }

@@ -33,7 +33,7 @@ const postFormComment = [
     await db.postNewComment(text, createdById, postId)
 
     res.json({
-      message: `The post with title ${title} and text " ${text} ", is_published: ${is_published} will be registered with prisma`,
+      message: `The comment with text ${text}is published in postId: ${postId} will be registered with prisma`,
     })
   },
 ]
