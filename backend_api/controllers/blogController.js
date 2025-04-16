@@ -38,4 +38,40 @@ const postFormPost = [
     })
   },
 ]
-module.exports = { getPosts, getFormPost, postFormPost }
+const putFormPost = [
+  validatePost,
+  async (req, res) => {
+    const errors = validationResult(req)
+    if (!errors.isEmpty()) {
+      console.log("errors found")
+      return res.status(400).json({
+        errors: errors.array(),
+      })
+    }
+
+    let text = req.body.text
+
+    let { postId } = req.params
+    await db.putPost(postId, title, text)
+
+    res.json({
+      message: `The post with id postId: ${postId} will be updated`,
+    })
+  },
+]
+const deletePost = async (req, res) => {
+  let { postId } = req.params
+
+  await db.deleteComment(postId)
+
+  res.json({
+    message: `The comment with id postId: ${postId} will be deleted`,
+  })
+}
+module.exports = {
+  getPosts,
+  getFormPost,
+  postFormPost,
+  putFormPost,
+  deletePost,
+}

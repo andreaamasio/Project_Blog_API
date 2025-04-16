@@ -49,10 +49,20 @@ const putFormComment = [
         errors: errors.array(),
       })
     }
+    let { commentId } = req.params
+    const comment = await db.findCommentById(commentId)
 
+    if (!comment) {
+      return res.status(404).json({ message: "Comment not found" })
+    }
+
+    if (comment.createdById !== req.user.id) {
+      return res
+        .status(403)
+        .json({ message: "You can only edit your own comments" })
+    }
     let text = req.body.text
 
-    let { commentId } = req.params
     await db.putComment(commentId, text)
 
     res.json({
@@ -61,12 +71,22 @@ const putFormComment = [
   },
 ]
 const deleteComment = async (req, res) => {
-  let { postId } = req.params
+  let { commentId } = req.params
+  const comment = await db.findCommentById(commentId)
 
-  await db.deleteComment(postId)
+  if (!comment) {
+    return res.status(404).json({ message: "Comment not found" })
+  }
+
+  if (comment.createdById !== req.user.id) {
+    return res
+      .status(403)
+      .json({ message: "You can only delete your own comments" })
+  }
+  await db.deleteComment(commentId)
 
   res.json({
-    message: `The comment with id postId: ${postId} will be deleted`,
+    message: `The comment with id commentId: ${commentId} will be deleted`,
   })
 }
 module.exports = {

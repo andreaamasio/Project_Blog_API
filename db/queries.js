@@ -130,6 +130,9 @@ async function deleteComment(postId) {
     throw error
   }
 }
+async function findCommentById(id) {
+  return await prisma.comment.findUnique({ where: { id } })
+}
 module.exports = {
   findUserByEmail,
   findUserById,
@@ -139,4 +142,5 @@ module.exports = {
   putComment,
   deleteComment,
   getAllComments,
+  findCommentById,
 }
