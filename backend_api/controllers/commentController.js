@@ -1,9 +1,12 @@
 const { body, validationResult } = require("express-validator")
 const emptyErr = "cannot be empty."
 const db = require("../../db/queries")
-const getComments = (req, res) => {
-  // Render the page with posts
-  res.json({ posts: "list of comments" })
+const getComments = async (req, res) => {
+  let comments = await db.getAllComments()
+
+  res.json({
+    comments: comments,
+  })
 }
 
 const getFormComment = async (req, res) => {

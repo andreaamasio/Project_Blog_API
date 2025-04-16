@@ -80,6 +80,17 @@ async function getAllComments(userId) {
     throw error
   }
 }
+async function getAllPosts() {
+  try {
+    const posts = await prisma.post.findMany()
+
+    console.log(`Posts: ${posts}`)
+    return posts
+  } catch (error) {
+    console.error(`Error fetching posts`, error)
+    throw error
+  }
+}
 async function postNewComment(text, createdById, postId) {
   try {
     const newComment = await prisma.comment.create({
@@ -143,4 +154,5 @@ module.exports = {
   deleteComment,
   getAllComments,
   findCommentById,
+  getAllPosts,
 }

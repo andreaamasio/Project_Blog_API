@@ -10,5 +10,8 @@ userRouter.get("/login", userController.getLogin)
 userRouter.post("/login", userController.postLogin)
 userRouter.get("/login/admin", userController.getLoginAdmin)
 userRouter.post("/login/admin", userController.postLoginAdmin)
+userRouter.get("/check-auth", userController.authenticateToken, (req, res) => {
+  res.json({ user: req.user })
+})
 
 module.exports = userRouter

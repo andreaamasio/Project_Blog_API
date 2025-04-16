@@ -95,23 +95,32 @@ const getLogin = (req, res) => {
 }
 const postLogin = async (req, res) => {
   const user = await db.findUserByEmail(req.body.email)
+  if (!user) {
+    return res.status(404).json({
+      message: "User not found, please sign up first",
+    })
+  }
+
   try {
-    if (await bcrypt.compare(req.body.password, user.password)) {
+    const match = await bcrypt.compare(req.body.password, user.password)
+    if (match) {
       const accessToken = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, {
         expiresIn: "1h",
       })
-      res.json({
+      return res.json({
         message: `Hi ${user.email}, you successfully logged in.`,
         accessToken,
+        is_admin: user.is_admin,
+        email: user.email,
       })
     } else {
-      res.json({
-        message: "the password did not match",
+      return res.status(401).json({
+        message: "Incorrect password",
       })
     }
-  } catch {
-    res.json({
-      message: "comparison of password was not successful",
+  } catch (err) {
+    return res.status(500).json({
+      message: "Error during password comparison",
     })
   }
 }
