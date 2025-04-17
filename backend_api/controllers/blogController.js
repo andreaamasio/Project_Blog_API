@@ -53,6 +53,7 @@ const putFormPost = [
     }
 
     let text = req.body.text
+    let title = req.body.title
 
     let { postId } = req.params
     await db.putPost(postId, title, text)
@@ -65,10 +66,10 @@ const putFormPost = [
 const deletePost = async (req, res) => {
   let { postId } = req.params
 
-  await db.deleteComment(postId)
+  await db.deletePost(postId)
 
   res.json({
-    message: `The comment with id postId: ${postId} will be deleted`,
+    message: `The post with id postId: ${postId} will be deleted`,
   })
 }
 module.exports = {

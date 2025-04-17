@@ -126,18 +126,52 @@ async function putComment(postId, newText) {
     throw error
   }
 }
-async function deleteComment(postId) {
+async function putPost(postId, newTitle, newText) {
+  try {
+    const updatedPost = await prisma.post.update({
+      where: {
+        id: postId,
+      },
+      data: {
+        title: newTitle,
+        text: newText,
+      },
+    })
+
+    console.log(`Post successfully updated with new text: ${newText}`)
+    return updatedPost
+  } catch (error) {
+    console.error(`Error creating updating post (${newText}):`, error)
+    throw error
+  }
+}
+async function deleteComment(commentIdId) {
   try {
     const deletedComment = await prisma.comment.delete({
+      where: {
+        id: commentIdId,
+      },
+    })
+
+    console.log(`Comment postId: ${commentIdId}`)
+    return deletedComment
+  } catch (error) {
+    console.error(`Error deleting comment (${commentIdId}):`, error)
+    throw error
+  }
+}
+async function deletePost(postId) {
+  try {
+    const deletedPost = await prisma.post.delete({
       where: {
         id: postId,
       },
     })
 
-    console.log(`Comment postId: ${postId}`)
-    return deletedComment
+    console.log(`Deleted post postId: ${postId}`)
+    return deletedPost
   } catch (error) {
-    console.error(`Error creating updating comment (${text}):`, error)
+    console.error(`Error deleting post (${postId}):`, error)
     throw error
   }
 }
@@ -155,4 +189,6 @@ module.exports = {
   getAllComments,
   findCommentById,
   getAllPosts,
+  deletePost,
+  putPost,
 }

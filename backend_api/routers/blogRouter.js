@@ -5,7 +5,12 @@ const userController = require("../controllers/userController")
 const blogRouter = Router()
 blogRouter.use(express.urlencoded({ extended: true }))
 
-blogRouter.get("/", blogController.getPosts)
+blogRouter.get(
+  "/",
+  userController.authenticateToken,
+  userController.authorizeAdmin,
+  blogController.getPosts
+)
 //blogRouter.get("/post/:postId", blogController.getPost)
 blogRouter.post(
   "/post/:postId",
