@@ -41,28 +41,52 @@ const postFormPost = [
     })
   },
 ]
-const putFormPost = [
-  validatePost,
-  async (req, res) => {
-    const errors = validationResult(req)
-    if (!errors.isEmpty()) {
-      console.log("errors found")
-      return res.status(400).json({
-        errors: errors.array(),
-      })
+// const putFormPost = [ // WORKING VERSION, REMOVE VALIDATEPOST
+//   validatePost,
+//   async (req, res) => {
+//     const errors = validationResult(req)
+//     if (!errors.isEmpty()) {
+//       console.log("errors found")
+//       return res.status(400).json({
+//         errors: errors.array(),
+//       })
+//     }
+
+//     let text = req.body.text
+//     let title = req.body.title
+
+//     let { postId } = req.params
+//     await db.putPost(postId, title, text)
+
+//     res.json({
+//       message: `The post with id postId: ${postId} will be updated`,
+//     })
+//   },
+// ]
+const putFormPost = async (req, res) => {
+  const errors = validationResult(req)
+  if (!errors.isEmpty()) {
+    console.log("errors found")
+    return res.status(400).json({ errors: errors.array() })
+  }
+
+  const { text, title } = req.body
+  const { postId } = req.params
+
+  try {
+    const updatedPost = await db.putPost(postId, title, text)
+
+    if (updatedPost) {
+      res.json(updatedPost) // Send the updated post object back
+    } else {
+      res.status(404).json({ message: "Post not found" }) // Handle case where post doesn't exist
     }
+  } catch (error) {
+    console.error("Error updating post:", error)
+    res.status(500).json({ message: "Failed to update post" }) // Handle database errors
+  }
+}
 
-    let text = req.body.text
-    let title = req.body.title
-
-    let { postId } = req.params
-    await db.putPost(postId, title, text)
-
-    res.json({
-      message: `The post with id postId: ${postId} will be updated`,
-    })
-  },
-]
 const deletePost = async (req, res) => {
   let { postId } = req.params
 

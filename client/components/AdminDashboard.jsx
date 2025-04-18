@@ -6,6 +6,11 @@ const AdminDashboard = ({ token }) => {
   const [posts, setPosts] = useState([])
   const [editPostId, setEditPostId] = useState(null)
   const [editData, setEditData] = useState({ title: "", text: "" })
+  const [newPost, setNewPost] = useState({
+    title: "",
+    text: "",
+    is_published: false,
+  })
 
   useEffect(() => {
     fetch(`${API_URL}/blog`, {
@@ -48,6 +53,9 @@ const AdminDashboard = ({ token }) => {
   const handleEditSubmit = async (e) => {
     e.preventDefault()
 
+    console.log("Editing post with ID:", editPostId)
+    console.log("Edit data:", editData)
+
     const res = await fetch(`${API_URL}/blog/post/${editPostId}`, {
       method: "PUT",
       headers: {
@@ -59,9 +67,17 @@ const AdminDashboard = ({ token }) => {
 
     if (res.ok) {
       const updatedPost = await res.json()
-      setPosts((prev) =>
-        prev.map((post) => (post.id === editPostId ? updatedPost : post))
-      )
+      console.log("Updated Post from API:", updatedPost)
+      console.log("Before update:", [...posts])
+      const newPosts = posts.map((post) => {
+        if (post.id === editPostId) {
+          return { ...updatedPost } // If the API returns the complete updated post
+        } else {
+          return { ...post }
+        }
+      })
+      console.log("After update:", newPosts)
+      setPosts(newPosts)
       setEditPostId(null)
       setEditData({ title: "", text: "" })
     } else {
@@ -108,7 +124,8 @@ const AdminDashboard = ({ token }) => {
               </div>
             </form>
           ) : (
-            <>
+            // Remove the redundant key here
+            <div className="py-2">
               <h3 className="text-lg font-semibold">{post.title}</h3>
               <p>{post.text}</p>
               <div className="space-x-2 mt-1">
@@ -125,7 +142,7 @@ const AdminDashboard = ({ token }) => {
                   Delete
                 </button>
               </div>
-            </>
+            </div>
           )}
         </div>
       ))}
