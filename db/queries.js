@@ -89,6 +89,20 @@ async function getCommentsOfPost(postId) {
     throw error
   }
 }
+
+const getCommentCountByPostId = async (postId) => {
+  try {
+    const count = await prisma.comment.count({
+      where: {
+        postId: postId,
+      },
+    })
+    return count
+  } catch (error) {
+    console.error("Error fetching comment count by post ID:", error)
+    throw error
+  }
+}
 async function getAllPosts() {
   try {
     const posts = await prisma.post.findMany()
@@ -135,7 +149,7 @@ async function putComment(postId, newText) {
     throw error
   }
 }
-async function putPost(postId, newTitle, newText) {
+async function putPost(postId, newTitle, newText, is_published) {
   try {
     const updatedPost = await prisma.post.update({
       where: {
@@ -144,10 +158,11 @@ async function putPost(postId, newTitle, newText) {
       data: {
         title: newTitle,
         text: newText,
+        is_published: is_published,
       },
     })
 
-    console.log(`Post successfully updated with new text: ${newText}`)
+    console.log(`Post successfully updated`)
     return updatedPost
   } catch (error) {
     console.error(`Error creating updating post (${newText}):`, error)
@@ -200,4 +215,5 @@ module.exports = {
   getAllPosts,
   deletePost,
   putPost,
+  getCommentCountByPostId,
 }

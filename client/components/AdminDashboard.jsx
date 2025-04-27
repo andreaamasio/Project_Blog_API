@@ -5,12 +5,17 @@ const API_URL = "http://localhost:3000"
 const AdminDashboard = ({ token }) => {
   const [posts, setPosts] = useState([])
   const [editPostId, setEditPostId] = useState(null)
-  const [editData, setEditData] = useState({ title: "", text: "" })
+  const [editData, setEditData] = useState({
+    title: "",
+    text: "",
+    is_published: false,
+  }) // Include is_published
   const [newPost, setNewPost] = useState({
     title: "",
     text: "",
     is_published: false,
   })
+
   const fetchPosts = async () => {
     const res = await fetch(`${API_URL}/blog`, {
       headers: {
@@ -22,13 +27,6 @@ const AdminDashboard = ({ token }) => {
   }
   useEffect(() => {
     fetchPosts()
-    fetch(`${API_URL}/blog`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    })
-      .then((res) => res.json())
-      .then((data) => setPosts(data.posts || []))
   }, [token])
 
   const handleDeletePost = async (postId) => {
@@ -51,19 +49,20 @@ const AdminDashboard = ({ token }) => {
 
   const handleEditClick = (post) => {
     setEditPostId(post.id)
-    setEditData({ title: post.title, text: post.text })
+    setEditData({
+      title: post.title,
+      text: post.text,
+      is_published: post.is_published,
+    }) // Include is_published
   }
 
   const handleCancelEdit = () => {
     setEditPostId(null)
-    setEditData({ title: "", text: "" })
+    setEditData({ title: "", text: "", is_published: false }) // Reset is_published
   }
 
   const handleEditSubmit = async (e) => {
     e.preventDefault()
-
-    console.log("Editing post with ID:", editPostId)
-    console.log("Edit data:", editData)
 
     const res = await fetch(`${API_URL}/blog/post/${editPostId}`, {
       method: "PUT",
@@ -71,26 +70,46 @@ const AdminDashboard = ({ token }) => {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
-      body: JSON.stringify(editData),
+      body: JSON.stringify(editData), // Send the editData
     })
 
     if (res.ok) {
       const updatedPost = await res.json()
-      console.log("Updated Post from API:", updatedPost)
-      console.log("Before update:", [...posts])
       const newPosts = posts.map((post) => {
         if (post.id === editPostId) {
-          return { ...updatedPost } // If the API returns the complete updated post
+          return { ...updatedPost }
         } else {
           return { ...post }
         }
       })
-      console.log("After update:", newPosts)
       setPosts(newPosts)
       setEditPostId(null)
-      setEditData({ title: "", text: "" })
+      setEditData({ title: "", text: "", is_published: false })
     } else {
       alert("Failed to update post")
+    }
+  }
+
+  const handleTogglePublish = async (postId, currentIsPublished) => {
+    const res = await fetch(`${API_URL}/blog/post/${postId}`, {
+      method: "PUT", //  use PUT
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ is_published: !currentIsPublished }), // Send the opposite value
+    })
+
+    if (res.ok) {
+      const updatedPost = await res.json() //get the updated post
+      const newPosts = posts.map((post) =>
+        post.id === postId
+          ? { ...post, is_published: updatedPost.is_published }
+          : post
+      )
+      setPosts(newPosts)
+    } else {
+      alert("Failed to toggle publish status")
     }
   }
 
@@ -159,9 +178,15 @@ const AdminDashboard = ({ token }) => {
       {posts
         .filter((post) => post.id)
         .map((post) => (
-          <div key={post.id} className="border-b py-2">
+          <div
+            key={post.id}
+            className="border-b py-2 flex items-center justify-between"
+          >
             {editPostId === post.id ? (
-              <form onSubmit={handleEditSubmit} className="space-y-2">
+              <form
+                onSubmit={handleEditSubmit}
+                className="space-y-2 flex-1 mr-4"
+              >
                 <input
                   type="text"
                   value={editData.title}
@@ -177,6 +202,19 @@ const AdminDashboard = ({ token }) => {
                   }
                   className="border p-1 w-full"
                 />
+                <label className="flex items-center space-x-2">
+                  <input
+                    type="checkbox"
+                    checked={editData.is_published}
+                    onChange={(e) =>
+                      setEditData({
+                        ...editData,
+                        is_published: e.target.checked,
+                      })
+                    }
+                  />
+                  <span>Publish</span>
+                </label>
                 <div className="space-x-2">
                   <button
                     type="submit"
@@ -194,25 +232,32 @@ const AdminDashboard = ({ token }) => {
                 </div>
               </form>
             ) : (
-              <div className="py-2">
+              <div className="flex-1 mr-4 py-2">
                 <h3 className="text-lg font-semibold">{post.title}</h3>
                 <p>{post.text}</p>
-                <div className="space-x-2 mt-1">
-                  <button
-                    onClick={() => handleEditClick(post)}
-                    className="text-blue-600 underline"
-                  >
-                    Edit
-                  </button>
-                  <button
-                    onClick={() => handleDeletePost(post.id)}
-                    className="text-red-600 underline"
-                  >
-                    Delete
-                  </button>
-                </div>
+                <p>Published: {post.is_published ? "Yes" : "No"}</p>
               </div>
             )}
+            <div className="space-x-2 flex-shrink-0">
+              <button
+                onClick={() => handleTogglePublish(post.id, post.is_published)}
+                className="text-purple-600 underline"
+              >
+                {post.is_published ? "Unpublish" : "Publish"}
+              </button>
+              <button
+                onClick={() => handleEditClick(post)}
+                className="text-blue-600 underline"
+              >
+                Edit
+              </button>
+              <button
+                onClick={() => handleDeletePost(post.id)}
+                className="text-red-600 underline"
+              >
+                Delete
+              </button>
+            </div>
           </div>
         ))}
     </div>

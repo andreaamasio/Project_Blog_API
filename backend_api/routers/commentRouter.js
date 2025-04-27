@@ -22,7 +22,11 @@ commentRouter.delete(
   userController.authenticateToken,
   commentController.deleteComment
 )
-
+commentRouter.get(
+  "/comment/count/:postId",
+  userController.authenticateToken,
+  commentController.getCommentCountByPostId
+)
 // blogRouter.post("/login", blogController.loginUser)
 // blogRouter.get("/logout", blogController.logoutUser)
 

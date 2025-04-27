@@ -1,6 +1,7 @@
 const { body, validationResult } = require("express-validator")
 const emptyErr = "cannot be empty."
 const db = require("../../db/queries")
+
 const getPosts = async (req, res) => {
   let posts = await db.getAllPosts()
 
@@ -41,28 +42,7 @@ const postFormPost = [
     })
   },
 ]
-// const putFormPost = [ // WORKING VERSION, REMOVE VALIDATEPOST
-//   validatePost,
-//   async (req, res) => {
-//     const errors = validationResult(req)
-//     if (!errors.isEmpty()) {
-//       console.log("errors found")
-//       return res.status(400).json({
-//         errors: errors.array(),
-//       })
-//     }
 
-//     let text = req.body.text
-//     let title = req.body.title
-
-//     let { postId } = req.params
-//     await db.putPost(postId, title, text)
-
-//     res.json({
-//       message: `The post with id postId: ${postId} will be updated`,
-//     })
-//   },
-// ]
 const putFormPost = async (req, res) => {
   const errors = validationResult(req)
   if (!errors.isEmpty()) {
@@ -70,11 +50,11 @@ const putFormPost = async (req, res) => {
     return res.status(400).json({ errors: errors.array() })
   }
 
-  const { text, title } = req.body
+  const { text, title, is_published } = req.body // Get is_published from request
   const { postId } = req.params
 
   try {
-    const updatedPost = await db.putPost(postId, title, text)
+    const updatedPost = await db.putPost(postId, title, text, is_published) // Pass is_published to db.putPost
 
     if (updatedPost) {
       res.json(updatedPost) // Send the updated post object back

@@ -93,10 +93,21 @@ const deleteComment = async (req, res) => {
     message: `The comment with id commentId: ${commentId} will be deleted`,
   })
 }
+const getCommentCountByPostId = async (req, res) => {
+  const { postId } = req.params
+  try {
+    const count = await db.getCommentCountByPostId(postId) // Replace with your actual database query
+    res.json({ count })
+  } catch (error) {
+    console.error("Error fetching comment count:", error)
+    res.status(500).json({ message: "Failed to fetch comment count" })
+  }
+}
 module.exports = {
   getComments,
   getFormComment,
   postFormComment,
   putFormComment,
   deleteComment,
+  getCommentCountByPostId,
 }
