@@ -2,7 +2,8 @@ const { body, validationResult } = require("express-validator")
 const emptyErr = "cannot be empty."
 const db = require("../../db/queries")
 const getComments = async (req, res) => {
-  let comments = await db.getAllComments()
+  let postId = req.params.postId
+  let comments = await db.getCommentsOfPost(postId)
 
   res.json({
     comments: comments,

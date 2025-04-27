@@ -5,7 +5,7 @@ const userController = require("../controllers/userController")
 const commentRouter = Router()
 commentRouter.use(express.urlencoded({ extended: true }))
 
-commentRouter.get("/", commentController.getComments)
+commentRouter.get("/:postId", commentController.getComments)
 //blogRouter.get("/post/:postId", blogController.getPost)
 commentRouter.post(
   "/:postId",

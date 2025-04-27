@@ -8,7 +8,7 @@ blogRouter.use(express.urlencoded({ extended: true }))
 blogRouter.get(
   "/",
   userController.authenticateToken,
-  userController.authorizeAdmin,
+  //userController.authorizeAdmin, removed because access to posts need to be granted to all users
   blogController.getPosts
 )
 //blogRouter.get("/post/:postId", blogController.getPost)

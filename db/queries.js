@@ -70,11 +70,19 @@ async function postNewPost(title, text, is_published) {
     throw error
   }
 }
-async function getAllComments(userId) {
+async function getCommentsOfPost(postId) {
+  console.log(`the postid is ${postId} `)
   try {
-    const comments = await prisma.comment.findMany()
+    const comments = await prisma.comment.findMany({
+      where: { postId: postId },
+      // select: {
+      //   id: true,
+      //   text: true,
+      //   createdById: true,
+      // },
+    })
 
-    console.log(`Comment of userId: ${userId}: ${comments}`)
+    console.log(`Comment for postID:  ${comments}`)
     return comments
   } catch (error) {
     console.error(`Error fetching comments`, error)
@@ -187,7 +195,7 @@ module.exports = {
   postNewComment,
   putComment,
   deleteComment,
-  getAllComments,
+  getCommentsOfPost,
   findCommentById,
   getAllPosts,
   deletePost,
