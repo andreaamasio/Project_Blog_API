@@ -40,6 +40,7 @@ const App = () => {
   const handleLogout = () => {
     setUser(null)
     setToken(null)
+    setSuccessMessage("")
     localStorage.removeItem("token")
   }
   return (
