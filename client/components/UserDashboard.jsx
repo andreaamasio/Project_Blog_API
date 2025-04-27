@@ -8,6 +8,7 @@ const UserDashboard = ({ token, userId }) => {
   const [newComments, setNewComments] = useState({})
   const [editCommentId, setEditCommentId] = useState(null)
   const [editCommentText, setEditCommentText] = useState("")
+  const [showComments, setShowComments] = useState({}) // New state to track comment visibility
 
   useEffect(() => {
     fetchPosts()
@@ -55,8 +56,12 @@ const UserDashboard = ({ token, userId }) => {
     })
 
     if (res.ok) {
-      fetchComments(postId)
+      await fetchComments(postId) // Await here to ensure comments are fetched before state update
       setNewComments((prev) => ({ ...prev, [postId]: "" }))
+      setShowComments((prevShowComments) => ({
+        ...prevShowComments,
+        [postId]: true, // Keep comments shown after adding
+      }))
     } else {
       alert("Failed to add comment")
     }
@@ -83,7 +88,7 @@ const UserDashboard = ({ token, userId }) => {
     })
 
     if (res.ok) {
-      fetchComments(postId)
+      await fetchComments(postId) // Await here too
       handleCancelEdit()
     } else {
       alert("Failed to update comment")
@@ -102,9 +107,19 @@ const UserDashboard = ({ token, userId }) => {
     })
 
     if (res.ok) {
-      fetchComments(postId)
+      await fetchComments(postId) // Await deletion
     } else {
       alert("Failed to delete comment")
+    }
+  }
+
+  const toggleComments = (postId) => {
+    setShowComments((prevShowComments) => ({
+      ...prevShowComments,
+      [postId]: !prevShowComments[postId], // Toggle the boolean value
+    }))
+    if (!showComments[postId]) {
+      fetchComments(postId)
     }
   }
 
@@ -117,63 +132,68 @@ const UserDashboard = ({ token, userId }) => {
           <p className="mb-2">{post.text}</p>
 
           <button
-            onClick={() => fetchComments(post.id)}
+            onClick={() => toggleComments(post.id)} // Use the toggle function
             className="text-blue-600 underline mb-2"
           >
-            Show Comments
+            {showComments[post.id] ? "Hide Comments" : "Show Comments"}
           </button>
 
-          <div className="space-y-2 mt-2">
-            {(comments[post.id] || []).map((comment) => (
-              <div key={comment.id} className="border p-2 rounded bg-gray-100">
-                {editCommentId === comment.id ? (
-                  <>
-                    <textarea
-                      value={editCommentText}
-                      onChange={(e) => setEditCommentText(e.target.value)}
-                      className="border p-1 w-full"
-                    />
-                    <div className="space-x-2 mt-1">
-                      <button
-                        onClick={() => handleSaveEditComment(post.id)}
-                        className="px-2 py-1 bg-green-600 text-white rounded"
-                      >
-                        Save
-                      </button>
-                      <button
-                        onClick={handleCancelEdit}
-                        className="px-2 py-1 bg-gray-500 text-white rounded"
-                      >
-                        Cancel
-                      </button>
-                    </div>
-                  </>
-                ) : (
-                  <>
-                    <p>{comment.text}</p>
-                    {comment.isOwner && (
+          {showComments[post.id] && ( // Conditionally render comments
+            <div className="space-y-2 mt-2">
+              {(comments[post.id] || []).map((comment) => (
+                <div
+                  key={comment.id}
+                  className="border p-2 rounded bg-gray-100"
+                >
+                  {editCommentId === comment.id ? (
+                    <>
+                      <textarea
+                        value={editCommentText}
+                        onChange={(e) => setEditCommentText(e.target.value)}
+                        className="border p-1 w-full"
+                      />
                       <div className="space-x-2 mt-1">
                         <button
-                          onClick={() => handleEditComment(comment)}
-                          className="text-blue-600 underline"
+                          onClick={() => handleSaveEditComment(post.id)}
+                          className="px-2 py-1 bg-green-600 text-white rounded"
                         >
-                          Edit
+                          Save
                         </button>
                         <button
-                          onClick={() =>
-                            handleDeleteComment(post.id, comment.id)
-                          }
-                          className="text-red-600 underline"
+                          onClick={handleCancelEdit}
+                          className="px-2 py-1 bg-gray-500 text-white rounded"
                         >
-                          Delete
+                          Cancel
                         </button>
                       </div>
-                    )}
-                  </>
-                )}
-              </div>
-            ))}
-          </div>
+                    </>
+                  ) : (
+                    <>
+                      <p>{comment.text}</p>
+                      {comment.isOwner && (
+                        <div className="space-x-2 mt-1">
+                          <button
+                            onClick={() => handleEditComment(comment)}
+                            className="text-blue-600 underline"
+                          >
+                            Edit
+                          </button>
+                          <button
+                            onClick={() =>
+                              handleDeleteComment(post.id, comment.id)
+                            }
+                            className="text-red-600 underline"
+                          >
+                            Delete
+                          </button>
+                        </div>
+                      )}
+                    </>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
 
           {/* Add Comment */}
           <div className="mt-4">
