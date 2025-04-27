@@ -14,7 +14,7 @@ const getFormPost = (req, res) => {
 }
 const validatePost = [
   body("title").trim().notEmpty().withMessage(`Title: ${emptyErr}`),
-  body("text").notEmpty().withMessage(`Text: ${emptyErr}`).isLength({ min: 8 }),
+  body("text").notEmpty().withMessage(`Text: ${emptyErr}`).isLength({ min: 1 }),
 ]
 const postFormPost = [
   validatePost,

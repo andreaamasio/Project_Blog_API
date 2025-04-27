@@ -13,7 +13,7 @@ blogRouter.get(
 )
 //blogRouter.get("/post/:postId", blogController.getPost)
 blogRouter.post(
-  "/post/:postId",
+  "/post",
   userController.authenticateToken,
   userController.authorizeAdmin,
   blogController.postFormPost

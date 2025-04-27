@@ -53,12 +53,13 @@ async function postNewUser(email, hashedPassword) {
     throw error
   }
 }
-async function postNewPost(title, text) {
+async function postNewPost(title, text, is_published) {
   try {
     const newPost = await prisma.post.create({
       data: {
         title,
         text,
+        is_published,
       },
     })
 
