@@ -53,7 +53,7 @@ const App = () => {
         user.is_admin ? (
           <AdminDashboard token={token} />
         ) : (
-          <UserDashboard token={token} />
+          <UserDashboard token={token} userId={user.id} />
         )
       ) : showRegister ? (
         <>

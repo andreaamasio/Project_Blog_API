@@ -73,7 +73,7 @@ const UserDashboard = ({ token, userId }) => {
   }
 
   const handleSaveEditComment = async (postId) => {
-    const res = await fetch(`${API_URL}/blog/post/comments/${editCommentId}`, {
+    const res = await fetch(`${API_URL}/comment/${editCommentId}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -94,7 +94,7 @@ const UserDashboard = ({ token, userId }) => {
     const confirm = window.confirm("Delete this comment?")
     if (!confirm) return
 
-    const res = await fetch(`${API_URL}/blog/post/comments/${commentId}`, {
+    const res = await fetch(`${API_URL}/comment/${commentId}`, {
       method: "DELETE",
       headers: {
         Authorization: `Bearer ${token}`,

@@ -70,7 +70,7 @@ const putFormComment = [
     await db.putComment(commentId, text)
 
     res.json({
-      message: `The comment with id postId: ${postId} will be updated`,
+      message: `The comment with id postId: ${commentId} will be updated`,
     })
   },
 ]
