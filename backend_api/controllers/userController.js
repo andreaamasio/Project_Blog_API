@@ -50,8 +50,6 @@ const postSignUp = [
 
     let email = req.body.email
     const hashedPassword = await bcrypt.hash(req.body.password, 10)
-    console.log(`email:${email}`)
-    console.log(`hashedPassword:${hashedPassword}`)
 
     await db.postNewUser(email, hashedPassword)
 

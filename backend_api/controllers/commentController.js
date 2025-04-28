@@ -34,8 +34,6 @@ const postFormComment = [
     let createdById = req.user.id
     let { postId } = req.params
 
-    console.log(`text:${text}`)
-
     await db.postNewComment(text, createdById, postId)
 
     res.json({

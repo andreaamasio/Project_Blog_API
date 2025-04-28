@@ -32,9 +32,6 @@ const postFormPost = [
     let text = req.body.text
     let is_published = req.body.is_published
 
-    console.log(`title:${title}`)
-    console.log(`text:${text}`)
-    console.log(`is_published:${is_published}`)
     await db.postNewPost(title, text, is_published)
 
     res.json({
